@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h2>Look Hey there!!! I am using mongo db</h2>
+    <form action="/addProduct" method="post">
+        <input type="text" placeholder="name" name="name" id="">
+        <input type="text" placeholder="price" name="price" id="">
+        <input type="text" placeholder="quantity" name="quantity" id="">
+        <button type="submit">Add Product</button>
+    </form>
+    <div id="products">
+
+    </div>
+    <div id="update"></div>
+
+    <script>
+        function loadAllProducts() {
+            fetch('/products')
+            .then(res => res.json())
+            .then(products => {
+                // console.log(products)
+
+                const container = document.getElementById('products')
+                products.forEach(pd => {
+                    const p = document.createElement('p')
+                    p.innerHTML = `<strong> ${pd.name} </strong> -- price: ${pd.price} quantity: ${pd.quantity} 
+                    <button onclick="loadProduct('${pd._id}')">update</button>
+                    <button onclick="deleteProduct('${pd._id}')">Delete</button>
+                    `;
+                    container.appendChild(p);
+                });
+            })
+        };
+        loadAllProducts();
+
+        function loadProduct (id){
+            fetch(`/product/${id}`)
+            .then(res=> res.json())
+            .then(data=>{
+                const update = document.getElementById('update')
+                update.innerHTML= `
+                <h3>Update : ${data._id}</h3>
+                <strong>Price</strong>: <input type="text" value="${data.price}" id="price"><br>
+                <strong>Quantity</strong>: <input type="text" value="${data.quantity}" id="quantity"><br>
+                <button>Submit</button>
+                `;
+            })
+        }
+
+        function deleteProduct (id){
+            fetch(`/delete/${id}`, {
+                method: 'DELETE'
+            })
+            .then(res=> res.json())
+            .then(result =>{
+                console.log('Deleted Successfully')
+            })
+        }
+
+    </script>
+</body>
+
+</html>
